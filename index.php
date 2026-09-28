@@ -1,15 +1,14 @@
 <?php
     require_once 'bdd.php';
     require 'header.php';
-    require 'oeuvres.php';
 ?>
 <?php
 
 
 //Je teste la connexion de la BDD en affichant les oeuvres
-//$oeuvresListing = $mysqlClient->prepare('SELECT * FROM oeuvres');
-//$oeuvresListing->execute();
-//$oeuvres = $oeuvresListing->fetchAll();
+$oeuvresListing = $mysqlClient->prepare('SELECT * FROM oeuvres');
+$oeuvresListing->execute();
+$oeuvres = $oeuvresListing->fetchAll();
 //echo '<pre>';
 //print_r ($oeuvres);
 //echo '</pre>';
