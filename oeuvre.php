@@ -1,27 +1,37 @@
 <?php
-    require 'header.php';
-    require 'oeuvres.php';
+require 'header.php';
+require_once 'bdd.php';
 
-    // Si l'URL ne contient pas d'id, on redirige sur la page d'accueil
-    if(empty($_GET['id'])) {
-        header('Location: index.php');
-    }
 
-    $oeuvre = null;
+//$oeuvreDetail = $mysqlClient->prepare('SELECT * FROM oeuvres WHERE id=:id');
+//$oeuvreDetail->execute([
+//    'id' => $_GET['id']
+//    ]);
+//$oeuvre = $oeuvreDetail->fetch();
 
-    // On parcourt les oeuvres du tableau afin de rechercher celle qui a l'id précisé dans l'URL
-    foreach($oeuvres as $o) {
-        // intval permet de transformer l'id de l'URL en un nombre (exemple : "2" devient 2)
-        if($o['id'] === intval($_GET['id'])) {
-            $oeuvre = $o;
-            break; // On stoppe le foreach si on a trouvé l'oeuvre
-        }
-    }
 
-    // Si aucune oeuvre trouvé, on redirige vers la page d'accueil
-    if(is_null($oeuvre)) {
-        header('Location: index.php');
-    }
+
+// Si l'URL ne contient pas d'id, on redirige sur la page d'accueil
+if(!isset($_GET['id'])) {
+    header('Location: index.php');
+    exit;
+}
+
+//On récupère les données de la table oeuvres via SQL avec l'id récupéré dans l'URL 
+//et on affiche la première ligne.
+$oeuvreDetail = $mysqlClient->prepare('SELECT * FROM oeuvres WHERE id=:id');
+$oeuvreDetail->execute([
+    'id' => $_GET['id']
+    ]);
+$oeuvre = $oeuvreDetail->fetch();
+
+//On vérifie que la requete a bien récupéré des infos
+//Si l'id n'existe pas, on renvoie à index.php exemple pour id=19 retour à l'index
+if ($oeuvre===false) {
+    header('Location: index.php');
+    exit;
+}
+
 ?>
 
 <article id="detail-oeuvre">
