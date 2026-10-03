@@ -1,56 +1,56 @@
-<?php    
+<?php 
+session_start();   
     require_once 'bdd.php';
-?>
 
-<?php
 //Je récupère les données du formulaire
 $postData = $_POST;
 
 //Je donne des noms de variables aux infos récupérées
-$titre = $postData['titre'];
-$description = $postData['description'];
-$artiste = $postData['artiste'];
+$titre = trim($postData['titre']);
+$description = trim($postData['description']);
+$artiste = trim($postData['artiste']);
 $image = $postData['image'];
+$_SESSION['errors']=[];
 
 //On vérifie que le titre de l'oeuvre est renseigné, n'est pas vide et n'est pas rempli d'espaces
 if (
     !isset($titre)
-    || empty(trim($titre))
+    || empty($titre)
 ){
-    echo("Il faut un titre d'oeuvre valide.<br>");
+    $_SESSION['errors']['titre']="Il faut un titre d'oeuvre valide.";
 }
 
 //On vérifie que le nom d'artiste est renseigné, n'est pas vide et n'est pas rempli d'espaces
 if (
     !isset($artiste)
-    || empty(trim($artiste))
+    || empty($artiste)
 ){
-    echo("Il faut un nom d'artiste valide.<br>");
+    $_SESSION['errors']['artiste']="Il faut un nom d'artiste valide.";
 }
 
-//on vérifie la description (pas d'espaces avant et min 3 caractères)
+//on vérifie que la description fait au moins 3caract.
 if (!isset($description)
-    || (strlen(trim($description)) < 3))
+    || (strlen($description)) < 3)
 {
-    echo("La description est trop courte !<br>");
+    $_SESSION['errors']['description']="La description est trop courte";
 }
 
 //On vérifie le début du lien de l'image
 if (!str_starts_with($image,'https://')){
-    echo("Le lien de l'image doit commencer par 'https://'.");
+    $_SESSION['errors']['image']="Le lien de l'image doit commencer par 'https://'.";
 }
 
-//J'insère les données du formulaire dans la BDD et redirection vers l'accueil
-$requeteInsert = 'INSERT INTO oeuvres (titre, description, artiste, image) VALUES (:titre, :description, :artiste, :image)';
-
-$insertOeuvre = $mysqlClient->prepare($requeteInsert);
-
-$insertOeuvre->execute([
-    'titre' => $titre,
-    'description' => $description,
-    'artiste' => $artiste,
-    'image' => $image
-]);
-header('Location: oeuvre.php?id=' . $mysqlClient->lastInsertId())
-
+if (!empty($_SESSION['errors'])){
+    header('Location: ajouter.php');
+}    else{
+        $requeteInsert = 'INSERT INTO oeuvres (titre, description, artiste, image) VALUES (:titre, :description, :artiste, :image)';
+        $insertOeuvre = $mysqlClient->prepare($requeteInsert);
+        $insertOeuvre->execute([
+            'titre' => $titre,
+            'description' => $description,
+            'artiste' => $artiste,
+            'image' => $image
+            ]);
+            header('Location: oeuvre.php?id=' . $mysqlClient->lastInsertId());
+    }
 ?>

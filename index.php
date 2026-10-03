@@ -1,8 +1,7 @@
 <?php
     require_once 'bdd.php';
     require 'header.php';
-?>
-<?php
+
 
 
 //Je teste la connexion de la BDD en affichant les oeuvres
